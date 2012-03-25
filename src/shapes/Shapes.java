@@ -3,7 +3,9 @@ package shapes;
 
 public class Shapes {
   
-  public interface Shape {}
+  public interface Shape {
+    public double area();
+  }
     
   public static class Triangle implements Shape {
     public final double base;
@@ -12,6 +14,10 @@ public class Shapes {
     public Triangle(double base, double height) {
       this.base = base;
       this.height = height;
+    }
+
+    @Override public double area() {
+      return base * height / 2.0;
     }
   }
 
@@ -23,6 +29,10 @@ public class Shapes {
       this.width = width;
       this.height = height;
     }
+
+    @Override public double area() {
+      return width * height;
+    }
   }
 
   public static class Circle implements Shape {
@@ -31,15 +41,9 @@ public class Shapes {
     public Circle(double radius) {
       this.radius = radius;
     }
-  }
-  
-  public static double area(Shape s) {
-    if (s instanceof Triangle) {
-      return ((Triangle) s).base * ((Triangle) s).height / 2.0; 
+
+    @Override public double area() {
+      return Math.PI * radius * radius;
     }
-    if (s instanceof Rectangle) {
-      return ((Rectangle) s).width * ((Rectangle) s).height; 
-    }
-    return Math.PI * ((Circle) s).radius * ((Circle) s).radius;
-  }
+  }  
 }
