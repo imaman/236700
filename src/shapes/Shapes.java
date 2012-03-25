@@ -33,4 +33,13 @@ public class Shapes {
     }
   }
   
+  public static double area(Shape s) {
+    if (s instanceof Triangle) {
+      return ((Triangle) s).base * ((Triangle) s).height / 2.0; 
+    }
+    if (s instanceof Rectangle) {
+      return ((Rectangle) s).width * ((Rectangle) s).height; 
+    }
+    return Math.PI * ((Circle) s).radius * ((Circle) s).radius;
+  }
 }
