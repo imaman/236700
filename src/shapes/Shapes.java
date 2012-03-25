@@ -3,7 +3,9 @@ package shapes;
 
 public class Shapes {
   
-  public static class Triangle {
+  public interface Shape {}
+    
+  public static class Triangle implements Shape {
     public final double base;
     public final double height;
     
@@ -13,7 +15,7 @@ public class Shapes {
     }
   }
 
-  public static class Rectangle {
+  public static class Rectangle implements Shape {
     public final double width;
     public final double height;
     
@@ -23,11 +25,12 @@ public class Shapes {
     }
   }
 
-  public static class Circle {
+  public static class Circle implements Shape {
     public final double radius;
     
     public Circle(double radius) {
       this.radius = radius;
     }
   }
+  
 }
