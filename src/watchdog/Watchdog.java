@@ -30,6 +30,8 @@ public class Watchdog {
     private int minLength;
     private boolean checkContent;
     private boolean checkLength;
+    private final Fetcher fetcher = new Fetcher();
+
 
     public Checker(boolean checkContent, boolean checkLength) {
       this.checkContent = checkContent;
@@ -40,7 +42,8 @@ public class Watchdog {
       this.minLength = newValue;
     }
 
-    public boolean check(String html) {
+    public boolean check(String address) throws Exception {
+      String html = fetcher.fetch(address);
       if (checkLength && html.length() < minLength) {
         return false;
       }
@@ -52,17 +55,15 @@ public class Watchdog {
   }
 
   private final Checker checker;
-  private final Fetcher fetcher;
   private final Alerter alerter;
     
-  public Watchdog(Checker checker, Fetcher fetcher, Alerter alerter) {
+  public Watchdog(Checker checker, Alerter alerter) {
     this.checker = checker;
-    this.fetcher = fetcher;
     this.alerter = alerter;
   }
   
   public void run(String address) throws Exception {
-    if (!checker.check(fetcher.fetch(address))) {
+    if (!checker.check(address)) {
       alerter.alert();
     }
   }
@@ -70,6 +71,6 @@ public class Watchdog {
   public static void main(String[] args) throws Exception {    
     Checker checker = new Checker(true, true);
     checker.setMinLength(5000);
-    new Watchdog(checker, new Fetcher(), new Alerter()).run("http://www.jquery.org");   
+    new Watchdog(checker, new Alerter()).run("http://www.jquery.org");   
   }
 }
