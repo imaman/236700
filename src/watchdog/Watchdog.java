@@ -20,12 +20,8 @@ public class Watchdog {
   
   public static class Alerter {  
     
-    private final Checker checker;
+    private Checker checker;
     
-    public Alerter(Checker checker) {
-      this.checker = checker;
-    }
-
     void alert() {
       Date now = new Date();
       System.out.println("Alert fired at " + now + " - please check!");
@@ -35,6 +31,11 @@ public class Watchdog {
       if (!checker.check(address)) {
         alert();
       }
+    }
+
+    public void setConfig(boolean checkContent, int minLength) {
+      checker = new Checker(checkContent, minLength >= 0);
+      checker.setMinLength(minLength);
     }
   }
   
@@ -78,8 +79,8 @@ public class Watchdog {
   }
   
   public static void main(String[] args) throws Exception {    
-    Checker checker = new Checker(true, true);
-    checker.setMinLength(5000);
-    new Watchdog(new Alerter(checker)).run("http://www.jquery.org");   
+    Alerter alerter = new Alerter();
+    alerter.setConfig(true, 5000);
+    new Watchdog(alerter).run("http://www.jquery.org");   
   }
 }
