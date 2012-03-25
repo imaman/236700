@@ -19,9 +19,22 @@ public class Watchdog {
   }
   
   public static class Alerter {  
+    
+    private final Checker checker;
+    
+    public Alerter(Checker checker) {
+      this.checker = checker;
+    }
+
     void alert() {
       Date now = new Date();
       System.out.println("Alert fired at " + now + " - please check!");
+    }
+
+    public void check(String address) throws Exception {
+      if (!checker.check(address)) {
+        alert();
+      }
     }
   }
   
@@ -54,23 +67,19 @@ public class Watchdog {
     }
   }
 
-  private final Checker checker;
   private final Alerter alerter;
     
-  public Watchdog(Checker checker, Alerter alerter) {
-    this.checker = checker;
+  public Watchdog(Alerter alerter) {
     this.alerter = alerter;
   }
   
   public void run(String address) throws Exception {
-    if (!checker.check(address)) {
-      alerter.alert();
-    }
+    alerter.check(address);
   }
   
   public static void main(String[] args) throws Exception {    
     Checker checker = new Checker(true, true);
     checker.setMinLength(5000);
-    new Watchdog(checker, new Alerter()).run("http://www.jquery.org");   
+    new Watchdog(new Alerter(checker)).run("http://www.jquery.org");   
   }
 }
