@@ -36,16 +36,19 @@ public class Validators {
     }
   }    
   
-  public static class CreatedResourceValidator implements Validator {
+  public static class CreatedResourceValidator extends CreatedValidator {
+    private String message;
+    
     @Override public boolean check(Response response) {
-      return response.entityId() != null && response.code() == 201;
+      if (response.entityId() != null)
+        message = "entity ID shoult not be null";
+      else if (!super.check(response)) 
+        message = super.getErrorMessage(response);
+      return message != null;
     }
        
     @Override public String getErrorMessage(Response response) {
-      if (response.code() != 201)  
-        return "expected code to be 201, and not " + response.code();
-      else
-        return "entity ID shoult not be null";
+      return message;
     }
   }
 }
