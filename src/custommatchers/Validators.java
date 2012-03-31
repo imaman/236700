@@ -23,14 +23,13 @@ public class Validators {
       
   public interface Validator {
     
-    public static final int CREATED = 201;
     public abstract String getErrorMessage(Response response);
     public abstract boolean check(Response response);
   }
   
   public static class CreatedValidator implements Validator {
     @Override public boolean check(Response response) {
-      return response.code() == CREATED;
+      return response.createdSuccessfully();
     }
        
     @Override public String getErrorMessage(Response response) {
@@ -44,7 +43,7 @@ public class Validators {
     }
        
     @Override public String getErrorMessage(Response response) {
-      if (response.code() != CREATED)  
+      if (response.createdSuccessfully())
         return "expected code to be " + CREATED + ", and not " + response.code();
       else
         return "entity ID shoult not be null";
