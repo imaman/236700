@@ -20,19 +20,21 @@ public class Validators {
 
     protected abstract Response sendRequest();
   }
-  
+      
   public interface Validator {
+    
+    public static final int CREATED = 201;
     public abstract String getErrorMessage(Response response);
     public abstract boolean check(Response response);
   }
   
   public static class CreatedValidator implements Validator {
     @Override public boolean check(Response response) {
-      return response.code() == 201;
+      return response.code() == CREATED;
     }
        
     @Override public String getErrorMessage(Response response) {
-      return "expected code to be 201, and not " + response.code();
+      return "expected code to be " + CREATED + ", and not " + response.code();
     }
   }    
   
@@ -42,8 +44,8 @@ public class Validators {
     }
        
     @Override public String getErrorMessage(Response response) {
-      if (response.code() != 201)  
-        return "expected code to be 201, and not " + response.code();
+      if (response.code() != CREATED)  
+        return "expected code to be " + CREATED + ", and not " + response.code();
       else
         return "entity ID shoult not be null";
     }
