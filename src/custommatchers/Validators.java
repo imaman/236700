@@ -10,7 +10,7 @@ public class Validators {
     }
     
     public void run(Request request) {
-      Response response = sendRequest();
+      Response response = sendRequest(request);
       for (Validator current : validators) {
         if (!current.check(response)) {
           throw new RuntimeException(current.getErrorMessage(response));
@@ -18,7 +18,7 @@ public class Validators {
       }
     }
 
-    protected abstract Response sendRequest();
+    protected abstract Response sendRequest(Request request);
   }
       
   public static enum Code {
