@@ -7,19 +7,20 @@ import java.util.Map;
 
 public class Urls {
 
-  private static final String TRANSACTIONS = "transactions/";
-  private static final String TARGET_TYPE_AND_ID = "/{targetType}/{targetId}/";
+  private static final String SEP = "/";
+  private static final String TRANSACTIONS = "transactions" + SEP;
+  private static final String TARGET_TYPE_AND_ID = SEP + "{targetType}" + SEP + "{targetId}" + SEP;
   private static final String SOURCE_ID = "{sourceId}";
   private static final String SOURCE_TYPE = "{sourceType}";
-  private static final String SOURCE_TYPE_AND_ID = SOURCE_TYPE + "/" + SOURCE_ID;
-  private static final String WHEN = "{year}/{month}";
+  private static final String SOURCE_TYPE_AND_ID = SOURCE_TYPE + SEP + SOURCE_ID;
+  private static final String WHEN = "{year}" + SEP + "{month}";
   
   public final String transactionsOnDate;
   public final String createTransaction;
   public final String deleteTransaction;
   
   public Urls(Map<String, Object> params) {
-    transactionsOnDate = populate(TRANSACTIONS + SOURCE_TYPE + "/on/" + WHEN, params); 
+    transactionsOnDate = populate(TRANSACTIONS + SOURCE_TYPE + SEP + "on" + SEP + WHEN, params); 
     createTransaction = populate(TRANSACTIONS + SOURCE_TYPE_AND_ID + TARGET_TYPE_AND_ID + WHEN + "/{percentage}", params);
     deleteTransaction = populate(TRANSACTIONS + SOURCE_TYPE_AND_ID + TARGET_TYPE_AND_ID + WHEN, params);
   }
