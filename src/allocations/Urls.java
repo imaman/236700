@@ -7,11 +7,13 @@ import java.util.Map;
 
 public class Urls {
 
+  private static final String TYPE = "Type";
+  private static final String ID = "Id";
   private static final String SEP = "/";
   private static final String TRANSACTIONS = "transactions" + SEP;
-  private static final String TARGET_TYPE_AND_ID = SEP + "{targetType}" + SEP + "{targetId}" + SEP;
-  private static final String SOURCE_ID = "{sourceId}";
-  private static final String SOURCE_TYPE = "{sourceType}";
+  private static final String TARGET_TYPE_AND_ID = SEP + "{target" + TYPE + "}" + SEP + "{target" + ID + "}" + SEP;
+  private static final String SOURCE_ID = "{source" + ID + "}";
+  private static final String SOURCE_TYPE = "{source" + TYPE + "}";
   private static final String SOURCE_TYPE_AND_ID = SOURCE_TYPE + SEP + SOURCE_ID;
   private static final String WHEN = "{year}" + SEP + "{month}";
   
