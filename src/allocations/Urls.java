@@ -13,11 +13,11 @@ public class Urls {
   private static final String ID = "Id";
   private static final String SEP = "/";
   private static final String TRANSACTIONS = "transactions" + SEP;
-  private static final String TARGET_TYPE_AND_ID = SEP + "{" + TARGET + TYPE + "}" + SEP + "{" +TARGET + ID + "}" + SEP;
-  private static final String SOURCE_ID = "{" + SOURCE + ID + "}";
-  private static final String SOURCE_TYPE = "{" + SOURCE + TYPE + "}";
+  private static final String TARGET_TYPE_AND_ID = SEP + var(TARGET + TYPE) + SEP + var(TARGET + ID) + SEP;
+  private static final String SOURCE_ID = var(SOURCE + ID);
+  private static final String SOURCE_TYPE = var(SOURCE + TYPE);
   private static final String SOURCE_TYPE_AND_ID = SOURCE_TYPE + SEP + SOURCE_ID;
-  private static final String WHEN = "{year}" + SEP + "{month}";
+  private static final String WHEN = var("year") + SEP + var("month");
   private static final String SOURCE_TARGET_WHEN = SOURCE_TYPE_AND_ID + TARGET_TYPE_AND_ID + WHEN;
   
   public final String transactionsOnDate;
@@ -26,8 +26,12 @@ public class Urls {
   
   public Urls(Map<String, Object> params) {
     transactionsOnDate = populate(TRANSACTIONS + SOURCE_TYPE + SEP + "on" + SEP + WHEN, params); 
-    createTransaction = populate(TRANSACTIONS + SOURCE_TARGET_WHEN + "/{percentage}", params);
+    createTransaction = populate(TRANSACTIONS + SOURCE_TARGET_WHEN + SEP + var("percentage"), params);
     deleteTransaction = populate(TRANSACTIONS + SOURCE_TARGET_WHEN, params);
+  }
+
+  private static String var(String variableName) {
+    return "{" + variableName + "}";
   }
 
   private String populate(String template, Map<String, Object> params) {
