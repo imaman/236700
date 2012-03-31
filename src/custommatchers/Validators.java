@@ -38,6 +38,16 @@ public class Validators {
     }
   }
   
+  public static class Messages {
+    public static String expectedCodeButGot(Code code, Response response) {
+      return "expected code to be " + code + ", and not " + response.code();
+    }
+
+    public static String expectedNonNullEntity() {
+      return "entity ID shoult not be null";
+    }
+  }
+  
   public interface Validator {
     
     public abstract String getErrorMessage(Response response);
@@ -50,8 +60,7 @@ public class Validators {
     }
        
     @Override public String getErrorMessage(Response response) {
-      return "expected code to be " + Code.CREATED + ", and not " 
-        + response.code();
+      return Messages.expectedCodeButGot(Code.CREATED, response);
     }
   }    
   
@@ -62,9 +71,9 @@ public class Validators {
        
     @Override public String getErrorMessage(Response response) {
       if (!Code.CREATED.in(response))
-        return "expected code to be " + Code.CREATED + ", and not " + response.code();
+        return Messages.expectedCodeButGot(Code.CREATED, response);
       else
-        return "entity ID shoult not be null";
+        return Messages.expectedNonNullEntity();
     }
   }
 }
