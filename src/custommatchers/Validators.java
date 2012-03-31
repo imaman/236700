@@ -38,7 +38,7 @@ public class Validators {
   
   public static class CreatedResourceValidator implements Validator {
     @Override public boolean check(Response response) {
-      return response.createdEntityId() != null && response.code() == 201;
+      return response.entityId() != null && response.code() == 201;
     }
        
     @Override public String getErrorMessage(Response response) {
