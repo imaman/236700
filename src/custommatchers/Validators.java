@@ -21,6 +21,23 @@ public class Validators {
     protected abstract Response sendRequest();
   }
       
+  public static enum Code {
+    CREATED(201);
+
+    private final int value;
+    
+    public boolean in(Response response) {
+      return response.code() == value;
+    }
+    
+    Code(int value) { this.value = value; }
+    
+    @Override
+    public String toString() {
+      return "" + value;
+    }
+  }
+  
   public interface Validator {
     
     public abstract String getErrorMessage(Response response);
@@ -29,22 +46,23 @@ public class Validators {
   
   public static class CreatedValidator implements Validator {
     @Override public boolean check(Response response) {
-      return response.createdSuccessfully();
+      return Code.CREATED.in(response);
     }
        
     @Override public String getErrorMessage(Response response) {
-      return "expected code to be " + CREATED + ", and not " + response.code();
+      return "expected code to be " + Code.CREATED + ", and not " 
+        + response.code();
     }
   }    
   
   public static class CreatedResourceValidator implements Validator {
     @Override public boolean check(Response response) {
-      return response.entityId() != null && response.code() == CREATED;
+      return response.entityId() != null && Code.CREATED.in(response);
     }
        
     @Override public String getErrorMessage(Response response) {
-      if (response.createdSuccessfully())
-        return "expected code to be " + CREATED + ", and not " + response.code();
+      if (!Code.CREATED.in(response))
+        return "expected code to be " + Code.CREATED + ", and not " + response.code();
       else
         return "entity ID shoult not be null";
     }
