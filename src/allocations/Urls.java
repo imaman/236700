@@ -18,6 +18,7 @@ public class Urls {
   private static final String SOURCE_TYPE = "{" + SOURCE + TYPE + "}";
   private static final String SOURCE_TYPE_AND_ID = SOURCE_TYPE + SEP + SOURCE_ID;
   private static final String WHEN = "{year}" + SEP + "{month}";
+  private static final String SOURCE_TARGET_WHEN = SOURCE_TYPE_AND_ID + TARGET_TYPE_AND_ID + WHEN;
   
   public final String transactionsOnDate;
   public final String createTransaction;
@@ -25,8 +26,8 @@ public class Urls {
   
   public Urls(Map<String, Object> params) {
     transactionsOnDate = populate(TRANSACTIONS + SOURCE_TYPE + SEP + "on" + SEP + WHEN, params); 
-    createTransaction = populate(TRANSACTIONS + SOURCE_TYPE_AND_ID + TARGET_TYPE_AND_ID + WHEN + "/{percentage}", params);
-    deleteTransaction = populate(TRANSACTIONS + SOURCE_TYPE_AND_ID + TARGET_TYPE_AND_ID + WHEN, params);
+    createTransaction = populate(TRANSACTIONS + SOURCE_TARGET_WHEN + "/{percentage}", params);
+    deleteTransaction = populate(TRANSACTIONS + SOURCE_TARGET_WHEN, params);
   }
 
   private String populate(String template, Map<String, Object> params) {
