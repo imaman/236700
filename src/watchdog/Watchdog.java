@@ -6,30 +6,70 @@ import java.util.Scanner;
 
 public class Watchdog {
 
-  private final boolean checkContent;
-  private final int minLength;
-
-  public Watchdog(boolean checkContent, int minLength) {
-    this.checkContent = checkContent;
-    this.minLength = minLength;
-  }
-
-  public void check(String address) throws Exception {
-    URL url = new URL(address);
-    StringBuilder result = new StringBuilder();
-    for (Scanner sc = new Scanner(url.openStream()); sc.hasNext(); ) {
-      result.append(sc.nextLine()).append("\n");
+  public static class Fetcher {
+    String fetch(String address) throws Exception {
+      URL url = new URL(address);
+      StringBuilder result = new StringBuilder();
+      for (Scanner sc = new Scanner(url.openStream()); sc.hasNext(); ) {
+        result.append(sc.nextLine()).append("\n");
+      }
+      
+      return result.toString();
     }
-    String html = result.toString();
-    if ((minLength >= 0) && html.length() < minLength || 
-        checkContent && !html.contains("body")) { 
+  }
+  
+  public static class Alerter {  
+    void alert() {
       Date now = new Date();
       System.out.println("Alert fired at " + now + " - please check!");
     }
   }
+  
+  public static class Checker {
 
+    private int minLength;
+    private boolean checkContent;
+    private boolean checkLength;
+
+    public Checker(boolean checkContent, boolean checkLength) {
+      this.checkContent = checkContent;
+      this.checkLength = checkLength;
+    }
+
+    public void setMinLength(int newValue) {
+      this.minLength = newValue;
+    }
+
+    public boolean check(String html) {
+      if (checkLength && html.length() < minLength) {
+        return false;
+      }
+      if (checkContent && !html.contains("body")) {
+        return false;
+      }
+      return true;
+    }
+  }
+
+  private final Checker checker;
+  private final Fetcher fetcher;
+  private final Alerter alerter;
+    
+  public Watchdog(Checker checker, Fetcher fetcher, Alerter alerter) {
+    this.checker = checker;
+    this.fetcher = fetcher;
+    this.alerter = alerter;
+  }
+  
+  public void run(String address) throws Exception {
+    if (!checker.check(fetcher.fetch(address))) {
+      alerter.alert();
+    }
+  }
+  
   public static void main(String[] args) throws Exception {    
-    Watchdog watchdog = new Watchdog(true, 5000);
-    watchdog.check("http://www.jquery.org");   
+    Checker checker = new Checker(true, true);
+    checker.setMinLength(5000);
+    new Watchdog(checker, new Fetcher(), new Alerter()).run("http://www.jquery.org");   
   }
 }
