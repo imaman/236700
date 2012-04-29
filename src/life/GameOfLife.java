@@ -42,24 +42,23 @@ public class GameOfLife {
   }
    
   public boolean step(int col, int row) {
-    int n = 0;
+    int numLivingNeighbors = 0;
     for (int i = col - 1; i <= col + 1; ++i) {
       for (int j = row - 1; j <= row + 1; ++j) {
         if (i == col && j == row)
           continue;
         
         if (isLive(i, j)) 
-          n += 1;
+          numLivingNeighbors += 1;
       }
     }
     boolean isLive = (col >= 0 && col < columns && row >= 0 && row < rows) 
       ? grid[col][row]
       : false;
       
-    if (isLive)
-      return n == 2 || n == 3;
-    else
-      return n == 3;
+    return isLive 
+      ? numLivingNeighbors == 2 || numLivingNeighbors == 3
+      : numLivingNeighbors == 3;
   }
 
   private boolean isLive(int col, int row) {
