@@ -42,7 +42,16 @@ public class GameOfLife {
   }
    
   public boolean step(int col, int row) {
-    int n = numLivingNeighbors(col, row);
+    int n = 0;
+    for (int i = col - 1; i <= col + 1; ++i) {
+      for (int j = row - 1; j <= row + 1; ++j) {
+        if (i == col && j == row)
+          continue;
+        
+        if (isLive(i, j)) 
+          n += 1;
+      }
+    }
     boolean isLive = (col >= 0 && col < columns && row >= 0 && row < rows) 
       ? grid[col][row]
       : false;
@@ -51,21 +60,6 @@ public class GameOfLife {
       return n == 2 || n == 3;
     else
       return n == 3;
-  }
-
-  private int numLivingNeighbors(int col, int row) {
-    int result = 0;
-    for (int i = col - 1; i <= col + 1; ++i) {
-      for (int j = row - 1; j <= row + 1; ++j) {
-        if (i == col && j == row)
-          continue;
-        
-        if (isLive(i, j)) 
-          result += 1;
-      }
-    }
-    
-    return result;
   }
 
   private boolean isLive(int col, int row) {
