@@ -25,6 +25,11 @@ public class GameOfLife {
     Set<int[]> nextLivingCells = new HashSet<int[]>();
     for (int c = 0; c < columns; ++c) {
       for (int r = 0; r < rows; ++r) {
+        boolean isLiveAtCurrentStage = 
+          (c >= 0 && c < columns && r >= 0 && r < rows) 
+          ? grid[c][r]
+          : false;
+
         int numLivingNeighbors = 0;
         for (int i = c - 1; i <= c + 1; ++i) {
           for (int j = r - 1; j <= r + 1; ++j) {
@@ -37,12 +42,7 @@ public class GameOfLife {
               numLivingNeighbors += 1;
           }
         }
-        
-        boolean isLiveAtCurrentStage = 
-          (c >= 0 && c < columns && r >= 0 && r < rows) 
-          ? grid[c][r]
-          : false;
-          
+                  
         boolean liveAtNextStage = isLiveAtCurrentStage 
             ? numLivingNeighbors == 2 || numLivingNeighbors == 3
             : numLivingNeighbors == 3; 
