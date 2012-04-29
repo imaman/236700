@@ -42,19 +42,15 @@ public class GameOfLife {
   }
    
   public boolean step(int col, int row) {
-    int n = numLivingNeighbors(col, row);        
-    if (isLive(col, row))
-      return evolveLive(n);
+    int n = numLivingNeighbors(col, row);
+    boolean isLive = (col >= 0 && col < columns && row >= 0 && row < rows) 
+      ? grid[col][row]
+      : false;
+      
+    if (isLive)
+      return n == 2 || n == 3;
     else
-      return evolveDead(n);
-  }
-
-  private boolean evolveDead(int n) {
-    return n == 3;
-  }
-
-  private boolean evolveLive(int n) {
-    return n == 2 || n == 3;
+      return n == 3;
   }
 
   private int numLivingNeighbors(int col, int row) {
