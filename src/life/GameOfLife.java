@@ -75,9 +75,9 @@ public class GameOfLife {
   }
 
   private boolean isLive(int col, int row) {
-    if (col >= 0 && col < columns && row >= 0 && row < rows)
-      return grid[col][row];
-    return false;
+    return (col >= 0 && col < columns && row >= 0 && row < rows) 
+      ? grid[col][row]
+      : false;
   }
   
   @Override
