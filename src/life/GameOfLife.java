@@ -13,7 +13,7 @@ public class GameOfLife {
     this.columns = numColumns;
     this.rows = numRows;
     grid = new boolean[numColumns][];
-    for(int i = 0; i < numRows; ++i)
+    for(int i = 0; i < numColumns; ++i)
       grid[i] = new boolean[numRows];
   }
   

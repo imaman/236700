@@ -6,57 +6,18 @@ import org.junit.Test;
 
 public class GameOfLive_Test {
 
-  @Test
-  public void generatesStringRepresentationOfTheBoard() {
-    GameOfLife game = new GameOfLife(3, 3);
-    game.setLive(1, 0);
-    game.setLive(1, 1);
-    game.setLive(1, 2);
-
-    assertBoard(game, ".X.", ".X.", ".X.");
-  }
-
-  @Test
-  public void stepEvolvesTheBoard() {
-    GameOfLife game = new GameOfLife(3, 3);
-    game.setLive(1, 0);
-    game.setLive(1, 1);
-    game.setLive(1, 2);
+  private GameOfLife game(String... lines) {
+    int numRows = lines.length;
+    int numColumns = lines[0].length();
     
-    game.step();
-    assertBoard(game, "...", "XXX", "...");
-  }
-
-  @Test
-  public void aDeadCellWithThreeNeighborsBecomesLive() {
-    GameOfLife game = new GameOfLife(2, 2);
-    // .X
-    // XX
-    
-    game.setLive(1, 0);
-    game.setLive(1, 1);
-    game.setLive(0, 1);
-    
-    game.step();
-    assertBoard(game, 
-      "XX", 
-      "XX");     
-  }
-  
-  @Test
-  public void aLiveCellWithThreeNeighborsStaysLive() {
-    GameOfLife game = new GameOfLife(2, 2);
-    // XX
-    // XX
-    game.setLive(0, 0);
-    game.setLive(1, 0);
-    game.setLive(1, 1);
-    game.setLive(0, 1);
-    
-    game.step();
-    assertBoard(game, 
-      "XX", 
-      "XX");     
+    GameOfLife result = new GameOfLife(numColumns, numRows);
+    for (int row = 0; row < numRows; ++row) {
+      for(int column = 0; column < numColumns; ++column) {
+        if (lines[row].charAt(column) == 'X')
+          result.setLive(column, row);
+      }
+    }
+    return result;
   }
   
   
@@ -66,4 +27,90 @@ public class GameOfLive_Test {
       sb.append(line).append("\n");
     assertEquals(sb.toString(), game.toString());
   }
+
+  @Test
+  public void generatesStringRepresentationOfTheBoard() {
+    GameOfLife game = game(
+      ".X.",
+      ".X.",
+      ".X.");
+
+    assertBoard(game, ".X.", ".X.", ".X.");
+  }
+
+  @Test
+  public void stepEvolvesTheBoard() {
+    GameOfLife game = game(
+      ".X.",
+      ".X.",
+      ".X.");
+    
+    game.step();
+    assertBoard(game, 
+      "...", 
+      "XXX", 
+      "...");
+  }
+
+  @Test
+  public void aDeadCellWithThreeNeighborsBecomesLive() {
+    GameOfLife game = game(
+      ".X",
+      "XX");
+
+    game.step();
+    assertBoard(game, 
+      "XX", 
+      "XX");     
+  }
+  
+  @Test
+  public void aLiveCellWithThreeNeighborsStaysLive() {
+    GameOfLife game = game(
+      "XX", 
+      "XX");
+    
+    game.step();
+    assertBoard(game, 
+      "XX", 
+      "XX");     
+  }  
+
+  @Test
+  public void beehive() {
+    GameOfLife game = game(
+      "......",
+      "..XX..",
+      ".X..X.",
+      "..XX..",
+      "......");
+    
+    game.step();
+    assertBoard(game, 
+      "......",
+      "..XX..",
+      ".X..X.",
+      "..XX..",
+      "......");
+  }  
+
+  @Test
+  public void toad() {
+    GameOfLife game = game(
+      "......",
+      "......",
+      "..XXX.",
+      ".XXX..",
+      "......",
+      "......");
+    
+    game.step();
+    assertBoard(game, 
+      "......",
+      "...X..",
+      ".X..X.",
+      ".X..X.",
+      "..X...",
+      "......");
+  }  
 }
