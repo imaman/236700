@@ -42,10 +42,8 @@ public class GameOfLife {
   }
    
   public boolean step(int col, int row) {
-    boolean isLive = isLive(col, row);
-    int n = numLivingNeighbors(col, row);
-        
-    if (isLive)
+    int n = numLivingNeighbors(col, row);        
+    if (isLive(col, row))
       return evolveLive(n);
     else
       return evolveDead(n);
