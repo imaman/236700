@@ -1,6 +1,8 @@
 package life;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class GameOfLife {
@@ -21,62 +23,94 @@ public class GameOfLife {
     grid[col][row] = true;
   }
   
+  private class Cell {
+
+    public final int c;
+    public final int r;
+
+    public Cell(int c, int r) {
+      this.c = c;
+      this.r = r;
+    }
+
+    public void applyNeighbors(Action action) {
+      for (int i = c - 1; i <= c + 1; ++i) {
+        for (int j = r - 1; j <= r + 1; ++j) {
+          if (i == c && j == r)
+            continue;
+          
+          action.run(new Cell(i, j));          
+        }
+      }
+    }
+    
+  }
+  
   public void step() {
-    Set<int[]> nextLivingCells = new HashSet<int[]>();
-    for (int c = 0; c < columns; ++c) {
-      for (int r = 0; r < rows; ++r) {
-        int numLivingNeighbors = 0;
-        for (int i = c - 1; i <= c + 1; ++i) {
-          for (int j = r - 1; j <= r + 1; ++j) {
-            if (i == c && j == r)
-              continue;
-            
-            if ((i >= 0 && i < columns && j >= 0 && j < rows) 
-                  ? grid[i][j]
-                  : false) 
-              numLivingNeighbors += 1;
+    final Set<Cell> nextLivingCells = new HashSet<Cell>();
+    apply(new Action() {
+      @Override
+      public void run(Cell cell) {
+        final List<Cell> livingNeighbors = new ArrayList<Cell>();
+        cell.applyNeighbors(new Action() {
+          @Override
+          public void run(Cell cell) {
+            if (isLive(cell))
+              livingNeighbors.add(cell);
           }
-        }
+        });
                   
+        int numLivingNeighbors = livingNeighbors.size();
         if (numLivingNeighbors == 3) {
-          nextLivingCells.add(new int[] { c, r });          
+          nextLivingCells.add(cell);          
         } else {
-          boolean isLiveAtCurrentStage = 
-            (c >= 0 && c < columns && r >= 0 && r < rows) 
-            ? grid[c][r]
-            : false;
-          if (isLiveAtCurrentStage && numLivingNeighbors == 2) 
-            nextLivingCells.add(new int[] { c, r });
+          if (isLive(cell) && numLivingNeighbors == 2) 
+            nextLivingCells.add(cell);
         }
       }
-    }
+    });
     
-    for (int c = 0; c < columns; ++c) {
-      for (int r = 0; r < rows; ++r) {
-        grid[c][r] = false;
+    apply(new Action() {
+      @Override
+      public void run(Cell cell) {
+        grid[cell.c][cell.r] = false;
       }
-    }
+    });
     
-    for (int[] cell : nextLivingCells) {
-      grid[cell[0]][cell[1]] = true;
+    for (Cell cell : nextLivingCells) {
+      grid[cell.c][cell.r] = true;
     }
   }
+
+  private void apply(Action action) {
+    for (int r = 0; r < rows; ++r) {
+      for (int c = 0; c < columns; ++c) {
+        action.run(new Cell(c, r));
+      }
+    }
+  }
+  
+  private interface Action {
+    public void run(Cell cell);
+  }
    
-  private boolean isLive(int col, int row) {
-    return (col >= 0 && col < columns && row >= 0 && row < rows) 
-      ? grid[col][row]
+  private boolean isLive(Cell cell) {
+    return (cell.c >= 0 && cell.c < columns && cell.r >= 0 && cell.r < rows) 
+      ? grid[cell.c][cell.r]
       : false;
   }
   
   @Override
   public String toString() {
-    StringBuilder result = new StringBuilder();
-    for(int r = 0; r < rows; ++r) {
-      for (int c = 0; c < columns; ++c) {
-        result.append(isLive(c, r) ? "X" : ".");
+    final StringBuilder result = new StringBuilder();
+    apply(new Action() {
+      @Override
+      public void run(Cell cell) {
+        result.append(isLive(cell) ? "X" : ".");
+        if (cell.c == columns - 1) 
+          result.append("\n");
       }
-      result.append("\n");
-    }
+    });
     
     return result.toString();
   }
