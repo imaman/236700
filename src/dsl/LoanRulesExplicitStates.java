@@ -1,10 +1,8 @@
 package dsl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class LoanRulesExplicitStates {
@@ -15,11 +13,21 @@ public class LoanRulesExplicitStates {
   
   public static class Transition {
     public final Condition condition;
-    public final State to;
+    public final State from;
+    public State to;
     
-    public Transition(Condition condition, State to) {
+    public Transition(Condition condition, State from) {
       this.condition = condition;
+      this.from = from;
+    }
+
+    public Transition moveTo(State to) {
       this.to = to;
+      return this;      
+    }
+
+    public Transition butWhen(Condition c) {
+      return from.when(c);
     }
   }
   
@@ -28,15 +36,17 @@ public class LoanRulesExplicitStates {
       
     private List<Transition> transitions = new ArrayList<Transition>();
     
-    public void addTransition(Condition condition, State to) {
-      transitions.add(new Transition(condition, to));
-    }
-
     public State processEvent(Event e) {
       for (Transition t : transitions)
         if (t.condition.check(e))
           return t.to;
       return null;
+    }
+
+    public Transition when(Condition c) {
+      Transition t = new Transition(c, this);
+      transitions.add(t);
+      return t;
     }
   }
 
@@ -124,17 +134,23 @@ public class LoanRulesExplicitStates {
   
   public LoanRulesExplicitStates() {
     // Overall structure of the machine is now well localized
-    // (although each state is now less localized).
+    // Behavior of each state is also pretty much  localized.
+        
+    idle.when(isPayment).moveTo(active);
     
-    idle.addTransition(isPayment, active);
-    active.addTransition(isDelayedPayment, restricted);
-    active.addTransition(isLastPayment, waitForPositive);    
-    restricted.addTransition(isDelayedPayment, superRestricted);
-    restricted.addTransition(isPayment, active);    
-    waitForFine.addTransition(isFinePaid, active);   
-    superRestricted.addTransition(isSuperPositiveBalance, waitForFine);    
-    waitForPositive.addTransition(isPositiveBalance, done);
-    done.addTransition(always, idle);
+    active.when(isDelayedPayment).moveTo(restricted)
+      .butWhen(isLastPayment).moveTo(waitForPositive);
+    
+    restricted.when(isDelayedPayment).moveTo(superRestricted)
+      .butWhen(isPayment).moveTo(active);
+    
+    waitForFine.when(isFinePaid).moveTo(active);
+    
+    superRestricted.when(isSuperPositiveBalance).moveTo(waitForFine);
+    
+    waitForPositive.when(isPositiveBalance).moveTo(done);
+    
+    done.when(always).moveTo(idle);
   }
   
   public void run() {
