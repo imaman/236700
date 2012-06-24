@@ -87,42 +87,42 @@ public class LoanRulesExplicitStates {
     }
   };  
   
-  public static Condition isPayment = new Condition() {
+  public static Condition paymentMade = new Condition() {
     @Override
     public boolean check(Event e) {
       return e.isPayment();
     }
   };
 
-  public static Condition isDelayedPayment = new Condition() {
+  public static Condition paymentIsDelayed = new Condition() {
     @Override
     public boolean check(Event e) {
       return e.isDelayedPayment();
     }
   };
   
-  public static Condition isLastPayment = new Condition() {
+  public static Condition lastPaymentMade = new Condition() {
     @Override
     public boolean check(Event e) {
       return e.isLastPayment();
     }
   };
   
-  public static Condition isFinePaid = new Condition() {
+  public static Condition finePaid = new Condition() {
     @Override
     public boolean check(Event e) {
       return e.isFineEvent();
     }
   };
 
-  public static Condition isSuperPositiveBalance = new Condition() {
+  public static Condition balanceIsSuperPositive = new Condition() {
     @Override
     public boolean check(Event e) {
       return e.isBalanceEvent() && e.getBalance() > SUPER_POSITIVE_BALANCE;
     }
   };
 
-  public static Condition isPositiveBalance = new Condition() {
+  public static Condition balanceIsPositive = new Condition() {
     @Override
     public boolean check(Event e) {
       return e.isBalanceEvent() && e.getBalance() > 0;
@@ -140,20 +140,17 @@ public class LoanRulesExplicitStates {
     // Overall structure of the machine is now well localized
     // Behavior of each state is also pretty much  localized.
         
-    idle.when(isPayment).loanIs(active);
+    idle.when(paymentMade).loanIs(active)
+      .andThenWhen(paymentIsDelayed).loanIs(restricted)
+      .butWhen(lastPaymentMade).loanIs(waitForPositive)
+      .andThenWhen(balanceIsPositive).loanIs(done)
+      .andThenWhen(always).loanIs(idle);
     
-    active.when(isDelayedPayment).loanIs(restricted)
-      .butWhen(isLastPayment).loanIs(waitForPositive)
-      .andThenWhen(isPositiveBalance).loanIs(done);
-    
-    restricted.when(isDelayedPayment).loanIs(superRestricted)
-      .butWhen(isPayment).loanIs(active);
-    
-    waitForFine.when(isFinePaid).loanIs(active);
-    
-    superRestricted.when(isSuperPositiveBalance).loanIs(waitForFine);
-    
-    done.when(always).loanIs(idle);
+    restricted.when(paymentIsDelayed).loanIs(superRestricted)
+      .butWhen(paymentMade).loanIs(active);
+        
+    superRestricted.when(balanceIsSuperPositive).loanIs(waitForFine)
+      .andThenWhen(finePaid).loanIs(active);    
   }
   
   public void run() {
