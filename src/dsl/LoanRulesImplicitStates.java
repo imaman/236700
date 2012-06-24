@@ -93,6 +93,5 @@ public class LoanRulesImplicitStates {
 
   private Event next() {
     return events.get(index++);
-  }
-  
+  }  
 }
