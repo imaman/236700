@@ -6,6 +6,7 @@ import java.util.List;
 public class LoanRulesExplicitStates {
 
   private static final int SUPER_POSITIVE_BALANCE = 10000;
+  private static final int SUPER_NEGATIVE_BALANCE = -5000;
   private final List<Event> events = new ArrayList<Event>();
   
   public abstract static class State {    
@@ -95,7 +96,12 @@ public class LoanRulesExplicitStates {
   public void run() {
     State state = idle;
     for(Event e : events) {
-      State next = state.run(e);
+      State next = null;
+      if (e.isBalanceEvent() && e.getBalance() < SUPER_NEGATIVE_BALANCE)
+        next = restricted; 
+      else 
+        next = state.run(e);
+      
       state = next == null ? state : next;
     }
   }
