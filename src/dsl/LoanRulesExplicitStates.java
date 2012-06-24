@@ -2,8 +2,10 @@ package dsl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class LoanRulesExplicitStates {
 
@@ -120,7 +122,6 @@ public class LoanRulesExplicitStates {
     done.addTransition("back-to-idle", idle);
   }
   
-
   public void run() {
     State state = idle;
     for(Event e : events) {
@@ -133,4 +134,25 @@ public class LoanRulesExplicitStates {
       state = next == null ? state : next;
     }
   }
+  
+  public boolean isReachable(State from, State to) {    
+    Set<State> visited = new HashSet<State>();
+    traverse(from, visited);
+    
+    return visited.contains(to);    
+  }
+
+  private void traverse(State state, Set<State> visited) {
+    if (visited.contains(state))
+      return;
+    
+    visited.add(state);
+    for (State s : state.nextStateByName.values())
+      traverse(s, visited);
+  }
+  
+  public static void main(String[] args) {
+    LoanRulesExplicitStates machine = new LoanRulesExplicitStates();
+    System.out.println(machine.isReachable(machine.superRestricted, machine.done));
+  }   
 }
