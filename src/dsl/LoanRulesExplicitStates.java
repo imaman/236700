@@ -29,6 +29,10 @@ public class LoanRulesExplicitStates {
     public Transition butWhen(Condition c) {
       return from.when(c);
     }
+
+    public Transition andThenWhen(Condition c) {
+      return to.when(c);
+    }
   }
   
   public static class State {    
@@ -139,7 +143,8 @@ public class LoanRulesExplicitStates {
     idle.when(isPayment).loanIs(active);
     
     active.when(isDelayedPayment).loanIs(restricted)
-      .butWhen(isLastPayment).loanIs(waitForPositive);
+      .butWhen(isLastPayment).loanIs(waitForPositive)
+      .andThenWhen(isPositiveBalance).loanIs(done);
     
     restricted.when(isDelayedPayment).loanIs(superRestricted)
       .butWhen(isPayment).loanIs(active);
@@ -147,8 +152,6 @@ public class LoanRulesExplicitStates {
     waitForFine.when(isFinePaid).loanIs(active);
     
     superRestricted.when(isSuperPositiveBalance).loanIs(waitForFine);
-    
-    waitForPositive.when(isPositiveBalance).loanIs(done);
     
     done.when(always).loanIs(idle);
   }
