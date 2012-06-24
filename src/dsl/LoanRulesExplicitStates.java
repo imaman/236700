@@ -21,7 +21,7 @@ public class LoanRulesExplicitStates {
       this.from = from;
     }
 
-    public Transition moveTo(State to) {
+    public Transition loanIs(State to) {
       this.to = to;
       return this;      
     }
@@ -136,21 +136,21 @@ public class LoanRulesExplicitStates {
     // Overall structure of the machine is now well localized
     // Behavior of each state is also pretty much  localized.
         
-    idle.when(isPayment).moveTo(active);
+    idle.when(isPayment).loanIs(active);
     
-    active.when(isDelayedPayment).moveTo(restricted)
-      .butWhen(isLastPayment).moveTo(waitForPositive);
+    active.when(isDelayedPayment).loanIs(restricted)
+      .butWhen(isLastPayment).loanIs(waitForPositive);
     
-    restricted.when(isDelayedPayment).moveTo(superRestricted)
-      .butWhen(isPayment).moveTo(active);
+    restricted.when(isDelayedPayment).loanIs(superRestricted)
+      .butWhen(isPayment).loanIs(active);
     
-    waitForFine.when(isFinePaid).moveTo(active);
+    waitForFine.when(isFinePaid).loanIs(active);
     
-    superRestricted.when(isSuperPositiveBalance).moveTo(waitForFine);
+    superRestricted.when(isSuperPositiveBalance).loanIs(waitForFine);
     
-    waitForPositive.when(isPositiveBalance).moveTo(done);
+    waitForPositive.when(isPositiveBalance).loanIs(done);
     
-    done.when(always).moveTo(idle);
+    done.when(always).loanIs(idle);
   }
   
   public void run() {
