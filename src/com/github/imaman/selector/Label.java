@@ -4,19 +4,17 @@ import java.util.Objects;
 
 public class Label {
 
-  public final String primaryName;
-  public final String secondaryName;
+  public final String name;
   public final int revision;
   
-  public Label(String primaryName, String secndaryName, int revision) {
-    this.primaryName = primaryName;
-    this.secondaryName = secndaryName;
+  public Label(String primaryName, int revision) {
+    this.name = primaryName;
     this.revision = revision;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(primaryName, secondaryName, revision);
+    return Objects.hash(name, revision);
   }
 
   @Override
@@ -26,20 +24,12 @@ public class Label {
     if (!getClass().equals(obj.getClass()))
       return false;
     Label that = (Label) obj;
-    return Objects.equals(primaryName, that.primaryName)
-        && Objects.equals(secondaryName, that.secondaryName)
+    return Objects.equals(name, that.name)
         && Objects.equals(revision, that.revision);
   }
 
   @Override
   public String toString() {
-    return "Label [" + primaryName + ", " + secondaryName + ", " + revision + "]";
+    return "Label [" + name + ", " + revision + "]";
   }
-  
-  
-  
-  
-  
-  
-  
 }

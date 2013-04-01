@@ -1,6 +1,7 @@
 package com.github.imaman.selector;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -15,9 +16,9 @@ import com.github.imaman.selector.external.Response;
 public class Selector_Test {
 
   private Response newResponse(String name, long age) {
-    Response young = mock(Response.class, name);
-    when(young.lastUpdatedAt()).thenReturn(age);
-    return young;
+    Response response = mock(Response.class, name);
+    when(response.lastUpdatedAt()).thenReturn(age);
+    return response;
   }
   
   @Test
