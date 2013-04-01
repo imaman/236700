@@ -3,8 +3,8 @@ package com.github.imaman.selector.external;
 public interface Response {
 
   /**
-   * How old is the data on which this response is based.
-   * @return minutes. 0 means "now", 10 means "10 minutes ago".
+   * When was the data (on which this response is based) last updated.
+   * @return milliseconds since midnight, January 1, 1970 UTC.
    */
-  public long age(); 
+  public long lastUpdatedAt(); 
 }

@@ -16,7 +16,7 @@ public class Selector_Test {
 
   private Response newResponse(String name, long age) {
     Response young = mock(Response.class, name);
-    when(young.age()).thenReturn(age);
+    when(young.lastUpdatedAt()).thenReturn(age);
     return young;
   }
   
@@ -25,25 +25,25 @@ public class Selector_Test {
     Selector selector = new Selector();
     List<Response> responses = new ArrayList<Response>();
     responses.add(newResponse("old", 900));
-    responses.add(newResponse("young", 1));
-    List<Response> selected = selector.select(responses);
+    responses.add(newResponse("older", 1));
+    List<Response> selected = selector.select(new Request(1500L, ""), responses);
     assertEquals(responses, selected);
   }
 
   @Test
   public void rejectsResponsesWhoseAgeExceedsTheThreshold() {
-    Response young = newResponse("young", 30L);   
-    Response older = newResponse("older", 40L);    
-    Response younger = newResponse("younger", 25L);
+    Response young = newResponse("young", 70);   
+    Response tooOld = newResponse("too old", 60);    
+    Response younger = newResponse("younger", 75);
     
     List<Response> responses = new ArrayList<Response>();
     responses.add(young);
-    responses.add(older);
+    responses.add(tooOld);
     responses.add(younger);
     
     Selector selector = new Selector();
     selector.setMaxAllowedAge(35);
-    List<Response> selected = selector.select(responses);
+    List<Response> selected = selector.select(new Request(100L,  ""), responses);
     assertEquals(Arrays.asList(young, younger), selected);
   }
 }

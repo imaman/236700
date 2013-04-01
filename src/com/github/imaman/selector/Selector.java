@@ -9,10 +9,11 @@ public class Selector {
 
   private int maxAllowedAge = -1;
 
-  public List<Response> select(List<Response> responses) {
+  public List<Response> select(Request request, List<Response> responses) {
     List<Response> selected = new ArrayList<Response>();
     for (Response response : responses) {
-      if (maxAllowedAge < 0 || response.age() <= maxAllowedAge) 
+      long age = request.time() - response.lastUpdatedAt();
+      if (maxAllowedAge < 0 || age <= maxAllowedAge) 
         selected.add(response);
     }
     
@@ -22,7 +23,7 @@ public class Selector {
   /**
    * Sets the upper limit on the age of a selected response.
    */
-  public void setMaxAllowedAge(int ageInMinutes) {
-    this.maxAllowedAge = ageInMinutes;
+  public void setMaxAllowedAge(int ageInMilliseconds) {
+    this.maxAllowedAge = ageInMilliseconds;
   }
 }
