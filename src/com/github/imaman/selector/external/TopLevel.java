@@ -8,7 +8,7 @@ import com.github.imaman.selector.Selector;
 
 public class TopLevel {
 
-  public final List<ResponseGenerator> generators = new ArrayList<ResponseGenerator>();
+  public final List<Generator> generators = new ArrayList<Generator>();
   private final Selector selector;
   
   public TopLevel(Selector selector) {
@@ -18,7 +18,7 @@ public class TopLevel {
   public List<Response> process(Request request) {
     List<Response> responses = new ArrayList<Response>();
     
-    for (ResponseGenerator current : generators) {
+    for (Generator current : generators) {
       Response response = current.process(request);
       if (response != null)
         responses.add(response);

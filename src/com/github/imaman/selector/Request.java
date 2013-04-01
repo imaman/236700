@@ -8,7 +8,7 @@ import java.util.Map;
 public class Request {
 
   private final List<Label> labels = new ArrayList<Label>();
-  private final Map<String, String> valueOfByKey = new HashMap<String, String>();
+  private final Map<String, String> valueByKey = new HashMap<String, String>();
   private final long time;
   private final String category;
   
@@ -20,7 +20,7 @@ public class Request {
       Label... labels) {
     this.time = time;
     this.category = requestedCategory;
-    this.valueOfByKey.entrySet().addAll(valueByKey.entrySet());
+    this.valueByKey.entrySet().addAll(valueByKey.entrySet());
     for (Label label : labels) {
       this.labels.add(label);
     }
@@ -31,7 +31,7 @@ public class Request {
   }
   
   public String valueOf(String key) {
-    return valueOfByKey.get(key);
+    return valueByKey.get(key);
   }
   
   public long time() {
