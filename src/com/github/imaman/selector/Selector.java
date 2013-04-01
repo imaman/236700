@@ -8,6 +8,7 @@ import com.github.imaman.selector.external.Tracker;
 
 public class Selector {
 
+  static final String SELECTION_POLICY_KEY = "selection-policy";
   private int maxAllowedAge = -1;
 
   public List<Response> select(Request request, List<Response> responses, Tracker tracker) {
@@ -20,7 +21,8 @@ public class Selector {
         tracker.discardedResponse(current, "Dropped due to age [" + age + "]");
     }
     
-    return selected;
+    SelectionPolicy policy = SelectionPolicy.lookup(request.valueOf(SELECTION_POLICY_KEY));
+    return policy.select(request, selected, tracker);
   }
 
   /**

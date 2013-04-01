@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class Request {
 
@@ -20,10 +21,10 @@ public class Request {
       Label... labels) {
     this.time = time;
     this.category = requestedCategory;
-    this.valueByKey.entrySet().addAll(valueByKey.entrySet());
-    for (Label label : labels) {
+    for (Entry<String, String>  entry : valueByKey.entrySet()) 
+      this.valueByKey.put(entry.getKey(), entry.getValue());      
+    for (Label label : labels)
       this.labels.add(label);
-    }
   }
   
   public String category() {
