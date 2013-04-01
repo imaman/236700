@@ -10,9 +10,11 @@ public class TopLevel {
 
   public final List<Generator> generators = new ArrayList<Generator>();
   private final Selector selector;
+  private final Tracker tracker;
   
-  public TopLevel(Selector selector) {
+  public TopLevel(Selector selector, Tracker tracker) {
     this.selector = selector;
+    this.tracker = tracker;
   }
   
   public List<Response> process(Request request) {
@@ -24,6 +26,6 @@ public class TopLevel {
         responses.add(response);
     }
     
-    return selector.select(request, responses);
+    return selector.select(request, responses, tracker);
   }
 }
