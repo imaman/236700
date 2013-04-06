@@ -18,7 +18,7 @@ public class SelectorConfig extends Config {
     this.data = (JsonObject) jp.parse(json);
   }
 
-  public Map<String, Integer> map() {
+  public Map<String, Integer> defaultRevisionByLabel() {
     Map<String, Integer> result = new HashMap<>();
     JsonArray array = data.getAsJsonArray("generators");
     for (JsonElement current : array) {

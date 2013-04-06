@@ -22,52 +22,67 @@ public enum SelectionPolicy {
     @Override
     public List<Response> select(Request request, List<Response> responses, Tracker tracker,
         SelectorConfig config) {
-      Map<String, Integer> revisionByLabelName = new HashMap<String, Integer>();
-      for (int i = 0; i < request.numLabels(); ++i)
-        revisionByLabelName.put(labelId(request.label(i)),  request.label(i).revision);
+      Map<String, Integer> requestedRevisionByLabelId = requestedRevisionMap(request);
+      Map<String, Integer> defaultRevisionByLabelId = defaultRevisionMap(config);
 
       List<Response> selected = new ArrayList<Response>();
       for (Response current : responses) {
-        boolean decided = findReasonToDiscard(current, revisionByLabelName, "Requested", selected, tracker);;
-        if (decided)
-          continue;
+        select(current, requestedRevisionByLabelId, defaultRevisionByLabelId, selected, tracker);
+      }
+      return selected;
+    }
 
-        if (config == null) {
-          tracker.discardedResponse(current, "Label [" + labelId(current.label()) + "] was not requested");
-          continue;
-        }
+    private Map<String, Integer> requestedRevisionMap(Request request) {
+      Map<String, Integer> revisionByLabelName = new HashMap<String, Integer>();
+      for (int i = 0; i < request.numLabels(); ++i)
+        revisionByLabelName.put(labelId(request.label(i)),  request.label(i).revision);
+      return revisionByLabelName;
+    }
 
-        decided = findReasonToDiscard(current, config.map(), "Default", selected, tracker);
-        if (decided)
-          continue;
+    private Map<String, Integer> defaultRevisionMap(SelectorConfig config) {
+      return config == null ? null : config.defaultRevisionByLabel();
+    }
 
-        tracker.discardedResponse(current, "Label [" + labelId(current.label()) + "] was not requested and is not the default");
+    private void select(Response response, Map<String, Integer> revisionByLabelId,
+        Map<String, Integer> defaultRevisionByLabelId, List<Response> selected,
+        Tracker tracker) {
+      if (addOrDiscard(response, revisionByLabelId, "Requested", selected, tracker))
+        return;
+
+      if (defaultRevisionByLabelId == null) {
+        tracker.discardedResponse(response, "Label [" + labelId(response.label())
+            + "] was not requested");
+        return;
       }
 
-      return selected;
+      if (addOrDiscard(response, defaultRevisionByLabelId, "Default", selected, tracker))
+        return;
+
+      tracker.discardedResponse(response, "Label [" + labelId(response.label())
+          + "] was not requested and is not the default");
     }
 
     private String labelId(Label label) {
       return label.generatorId + "/" + label.name;
     }
 
-    private boolean findReasonToDiscard(Response current, Map<String, Integer> revisionByLabelName,
+    private boolean addOrDiscard(Response response, Map<String, Integer> revisionByLabelId,
         String prefix, List<Response> selected, Tracker tracker) {
-      Label label = current.label();
+      Label label = response.label();
       if (label == null) {
-        selected.add(current);
+        selected.add(response);
         return true;
       }
 
-      Integer requestedRevision = revisionByLabelName.get(labelId(label));
+      Integer requestedRevision = revisionByLabelId.get(labelId(label));
       if (requestedRevision != null) {
         if (Objects.equals(requestedRevision, label.revision)) {
-          selected.add(current);
+          selected.add(response);
           return true;
         }
         String reason = String.format("%s revision [%s] does not match the response's revision [%d]",
             prefix, requestedRevision, label.revision);
-        tracker.discardedResponse(current, reason);
+        tracker.discardedResponse(response, reason);
         return true;
       }
 
