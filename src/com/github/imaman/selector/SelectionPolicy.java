@@ -28,24 +28,20 @@ public enum SelectionPolicy {
 
       List<Response> selected = new ArrayList<Response>();
       for (Response current : responses) {
-        String reason = findReasonToDiscard(current, revisionByLabelName, "Requested", selected, tracker);
-        boolean undecided = Objects.equals("",  reason);
-        if (!undecided) {
+        boolean decided = findReasonToDiscard(current, revisionByLabelName, "Requested", selected, tracker);;
+        if (decided)
+          continue;
 
-        }
-        else if (config != null) {
-          reason = findReasonToDiscard(current, config.map(), "Default", selected, tracker);
-          if (reason == null) {
-            ;
-          }
-          else if (!reason.isEmpty()) {
-            ;
-          }
-          else
-            tracker.discardedResponse(current, "Label [" + labelId(current.label()) + "] was not requested and is not the default version");
-        } else
+        if (config == null) {
           tracker.discardedResponse(current, "Label [" + labelId(current.label()) + "] was not requested");
+          continue;
+        }
 
+        decided = findReasonToDiscard(current, config.map(), "Default", selected, tracker);
+        if (decided)
+          continue;
+
+        tracker.discardedResponse(current, "Label [" + labelId(current.label()) + "] was not requested and is not the default");
       }
 
       return selected;
@@ -55,28 +51,27 @@ public enum SelectionPolicy {
       return label.generatorId + "/" + label.name;
     }
 
-    private String findReasonToDiscard(Response current, Map<String, Integer> revisionByLabelName,
+    private boolean findReasonToDiscard(Response current, Map<String, Integer> revisionByLabelName,
         String prefix, List<Response> selected, Tracker tracker) {
       Label label = current.label();
       if (label == null) {
         selected.add(current);
-        return null;
+        return true;
       }
-
 
       Integer requestedRevision = revisionByLabelName.get(labelId(label));
       if (requestedRevision != null) {
         if (Objects.equals(requestedRevision, label.revision)) {
           selected.add(current);
-          return null;
+          return true;
         }
         String reason = String.format("%s revision [%s] does not match the response's revision [%d]",
             prefix, requestedRevision, label.revision);
         tracker.discardedResponse(current, reason);
-        return "_";
+        return true;
       }
 
-      return "";
+      return false;
     }
   }
   ;
