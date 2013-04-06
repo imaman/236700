@@ -14,19 +14,21 @@ public enum SelectionPolicy {
   SELECT_ALL {
     @Override
     public List<Response> select(Request request, List<Response> responses,
-        Tracker tracker) {
+        Tracker tracker, SelectorConfig config) {
       return responses;
     }
   },
   SELECT_BY_LABEL {
-    public List<Response> select(Request request, List<Response> responses, Tracker tracker) {
+    @Override
+    public List<Response> select(Request request, List<Response> responses, Tracker tracker,
+        SelectorConfig config) {
       Map<String, Integer> revisionByLabelName = new HashMap<String, Integer>();
       for (int i = 0; i < request.numLabels(); ++i)
         revisionByLabelName.put(labelId(request.label(i)),  request.label(i).revision);
 
       List<Response> selected = new ArrayList<Response>();
       for (Response current : responses) {
-        String reason = findReasonToDiscard(current, revisionByLabelName);
+        String reason = findReasonToDiscard(current, revisionByLabelName, config);
         if (reason == null)
           selected.add(current);
         else
@@ -40,7 +42,8 @@ public enum SelectionPolicy {
       return label.generatorId + "/" + label.name;
     }
 
-    private String findReasonToDiscard(Response current, Map<String, Integer> revisionByLabelName) {
+    private String findReasonToDiscard(Response current, Map<String, Integer> revisionByLabelName,
+        SelectorConfig config) {
       Label label = current.label();
       if (label == null)
         return null;
@@ -57,8 +60,9 @@ public enum SelectionPolicy {
     }
   }
   ;
-  
-  public abstract List<Response> select(Request request, List<Response> responses, Tracker tracker);
+
+  public abstract List<Response> select(Request request, List<Response> responses, Tracker tracker,
+      SelectorConfig config);
 
   public static SelectionPolicy lookup(String policyName) {
     return policyName == null ? SELECT_BY_LABEL : valueOf(policyName);
