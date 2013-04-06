@@ -7,7 +7,7 @@ public class Label {
   public final String generatorId;
   public final String name;
   public final int revision;
-  
+
   public Label(String generatorId, String primaryName, int revision) {
     this.generatorId = generatorId;
     this.name = primaryName;
@@ -26,7 +26,7 @@ public class Label {
     if (!getClass().equals(obj.getClass()))
       return false;
     Label that = (Label) obj;
-    return Objects.equals(generatorId, that.generatorId) 
+    return Objects.equals(generatorId, that.generatorId)
         && Objects.equals(name, that.name)
         && Objects.equals(revision, that.revision);
   }
@@ -34,5 +34,9 @@ public class Label {
   @Override
   public String toString() {
     return "Label [" + generatorId + ", " + name + ", " + revision + "]";
+  }
+
+  public String id() {
+    return generatorId + "/" + name;
   }
 }

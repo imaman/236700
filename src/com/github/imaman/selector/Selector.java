@@ -47,7 +47,7 @@ public class Selector {
   private Map<String, Integer> requestedRevisionMap(Request request) {
     Map<String, Integer> revisionByLabelName = new HashMap<String, Integer>();
     for (int i = 0; i < request.numLabels(); ++i)
-      revisionByLabelName.put(SelectionPolicy.labelId(request.label(i)),  request.label(i).revision);
+      revisionByLabelName.put(request.label(i).id(),  request.label(i).revision);
     return revisionByLabelName;
   }
 }

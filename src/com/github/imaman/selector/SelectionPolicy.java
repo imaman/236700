@@ -36,7 +36,7 @@ public enum SelectionPolicy {
         return;
 
       if (defaultRevisionByLabelId == null) {
-        tracker.discardedResponse(response, "Label [" + labelId(response.label())
+        tracker.discardedResponse(response, "Label [" + response.label().id()
             + "] was not requested");
         return;
       }
@@ -44,7 +44,7 @@ public enum SelectionPolicy {
       if (addOrDiscard(response, defaultRevisionByLabelId, "Default", selected, tracker))
         return;
 
-      tracker.discardedResponse(response, "Label [" + labelId(response.label())
+      tracker.discardedResponse(response, "Label [" + response.label().id()
           + "] was not requested and is not the default");
     }
 
@@ -56,7 +56,7 @@ public enum SelectionPolicy {
         return true;
       }
 
-      Integer requestedRevision = revisionByLabelId.get(labelId(label));
+      Integer requestedRevision = revisionByLabelId.get(label.id());
       if (requestedRevision != null) {
         if (Objects.equals(requestedRevision, label.revision)) {
           selected.add(response);
@@ -78,9 +78,5 @@ public enum SelectionPolicy {
 
   public static SelectionPolicy lookup(String policyName) {
     return policyName == null ? SELECT_BY_LABEL : valueOf(policyName);
-  }
-
-  public static String labelId(Label label) {
-    return label.generatorId + "/" + label.name;
   }
 }
