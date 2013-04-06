@@ -22,33 +22,38 @@ public enum SelectionPolicy {
     public List<Response> select(Request request, List<Response> responses, Tracker tracker) {
       Map<String, Integer> revisionByLabelName = new HashMap<String, Integer>();
       for (int i = 0; i < request.numLabels(); ++i)
-        revisionByLabelName.put(request.label(i).name,  request.label(i).revision);
-      
+        revisionByLabelName.put(labelId(request.label(i)),  request.label(i).revision);
+
       List<Response> selected = new ArrayList<Response>();
       for (Response current : responses) {
         String reason = findReasonToDiscard(current, revisionByLabelName);
         if (reason == null)
           selected.add(current);
         else
-          tracker.discardedResponse(current, reason);        
+          tracker.discardedResponse(current, reason);
       }
-      
+
       return selected;
+    }
+
+    private String labelId(Label label) {
+      return label.generatorId + "/" + label.name;
     }
 
     private String findReasonToDiscard(Response current, Map<String, Integer> revisionByLabelName) {
       Label label = current.label();
       if (label == null)
         return null;
-               
-      Integer requestedRevision = revisionByLabelName.get(label.name);
-      if (Objects.equals(requestedRevision, label.revision)) 
-        return null;
-      
-      return requestedRevision == null 
-          ? "Label [" + label.name + "] was not requested" 
-          : String.format("Requested revision [%s] does not match the response's revision [%d]", 
-                requestedRevision, label.revision);      
+
+      Integer requestedRevision = revisionByLabelName.get(labelId(label));
+      if (requestedRevision != null) {
+        if (Objects.equals(requestedRevision, label.revision))
+          return null;
+        return String.format("Requested revision [%s] does not match the response's revision [%d]",
+            requestedRevision, label.revision);
+      }
+
+      return "Label [" + labelId(label) + "] was not requested";
     }
   }
   ;

@@ -4,17 +4,19 @@ import java.util.Objects;
 
 public class Label {
 
+  public final String generatorId;
   public final String name;
   public final int revision;
   
-  public Label(String primaryName, int revision) {
+  public Label(String generatorId, String primaryName, int revision) {
+    this.generatorId = generatorId;
     this.name = primaryName;
     this.revision = revision;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, revision);
+    return Objects.hash(generatorId, name, revision);
   }
 
   @Override
@@ -24,12 +26,13 @@ public class Label {
     if (!getClass().equals(obj.getClass()))
       return false;
     Label that = (Label) obj;
-    return Objects.equals(name, that.name)
+    return Objects.equals(generatorId, that.generatorId) 
+        && Objects.equals(name, that.name)
         && Objects.equals(revision, that.revision);
   }
 
   @Override
   public String toString() {
-    return "Label [" + name + ", " + revision + "]";
+    return "Label [" + generatorId + ", " + name + ", " + revision + "]";
   }
 }
