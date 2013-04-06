@@ -29,7 +29,7 @@ public class SelectorConfig extends Config {
         String labelName = label.getAsJsonArray().get(0).getAsString();
         int revision = label.getAsJsonArray().get(1).getAsInt();
 
-        result.put(name + "/" + labelName, revision); // <-- DRY violation w.r.t labelId()
+        result.put(name + "/" + labelName, revision); // <-- DRY violation w.r.t Label.id()
       }
     }
     return result;
