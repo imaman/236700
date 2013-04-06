@@ -14,16 +14,15 @@ public enum SelectionPolicy {
   SELECT_ALL {
     @Override
     public List<Response> select(Request request, List<Response> responses,
-        Tracker tracker, SelectorConfig config) {
+        Tracker tracker, Map<String, Integer> defaultRevisionByLabelId) {
       return responses;
     }
   },
   SELECT_BY_LABEL {
     @Override
     public List<Response> select(Request request, List<Response> responses, Tracker tracker,
-        SelectorConfig config) {
+        Map<String, Integer> defaultRevisionByLabelId) {
       Map<String, Integer> requestedRevisionByLabelId = requestedRevisionMap(request);
-      Map<String, Integer> defaultRevisionByLabelId = defaultRevisionMap(config);
 
       List<Response> selected = new ArrayList<Response>();
       for (Response current : responses) {
@@ -37,10 +36,6 @@ public enum SelectionPolicy {
       for (int i = 0; i < request.numLabels(); ++i)
         revisionByLabelName.put(labelId(request.label(i)),  request.label(i).revision);
       return revisionByLabelName;
-    }
-
-    private Map<String, Integer> defaultRevisionMap(SelectorConfig config) {
-      return config == null ? null : config.defaultRevisionByLabel();
     }
 
     private void select(Response response, Map<String, Integer> revisionByLabelId,
@@ -92,7 +87,7 @@ public enum SelectionPolicy {
   ;
 
   public abstract List<Response> select(Request request, List<Response> responses, Tracker tracker,
-      SelectorConfig config);
+      Map<String, Integer> defaultRevisionByLabelId);
 
   public static SelectionPolicy lookup(String policyName) {
     return policyName == null ? SELECT_BY_LABEL : valueOf(policyName);
