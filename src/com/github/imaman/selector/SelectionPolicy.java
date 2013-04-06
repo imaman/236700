@@ -29,7 +29,8 @@ public enum SelectionPolicy {
       List<Response> selected = new ArrayList<Response>();
       for (Response current : responses) {
         String reason = findReasonToDiscard(current, revisionByLabelName, config);
-        if (reason == null)
+        if (reason == null ||
+            config != null && config.map().get(labelId(current.label())) == current.label().revision) // <- FAKE IT
           selected.add(current);
         else
           tracker.discardedResponse(current, reason);

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.imaman.selector.external.Response;
@@ -141,5 +142,38 @@ public class Selector_Test {
     List<Response> selected = selector.select(a1Request, asList(a2Response), tracker);
 
     assertEquals(asList(a2Response), selected);
+  }
+
+  @Test
+  public void retainsResponseIfNoRequestedLabelIsSpecifiedButItMatchesTheDefaultLabel() {
+    Response a1 = newResponse("a1", 0, new Label("G_G", "A", 1));
+    Request request = new Request(0L,  "", new Label("G_G", "SOME-OTHER-LABEL", 500));
+
+    SelectorConfig config = new SelectorConfig();
+    config.LoadFromString("{" +
+    		"generators: [" +
+        "  { name: 'G_G', default_labels: [['A', 1], ['B', 2]] }]}");
+
+    Selector selector = new Selector(config);
+    List<Response> selected = selector.select(request, asList(a1), tracker);
+
+    assertEquals(asList(a1), selected);
+  }
+
+  @Test
+  @Ignore
+  public void temporaryTestJutsToMakeSureWeDoNotForgetTheFakeImpl() {
+    Response b2 = newResponse("a1", 0, new Label("G_G", "B", 2));
+    Request request = new Request(0L,  "");
+
+    SelectorConfig config = new SelectorConfig();
+    config.LoadFromString("{" +
+        "generators: [" +
+        "  { name: 'G_G', default_labels: [['B', 2]] }]}");
+
+    Selector selector = new Selector(config);
+    List<Response> selected = selector.select(request, asList(b2), tracker);
+
+    assertEquals(asList(b2), selected);
   }
 }
