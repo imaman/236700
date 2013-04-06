@@ -1,7 +1,6 @@
 package com.github.imaman.selector;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -13,29 +12,21 @@ public enum SelectionPolicy {
 
   SELECT_ALL {
     @Override
-    public List<Response> select(Request request, List<Response> responses,
-        Tracker tracker, Map<String, Integer> defaultRevisionByLabelId) {
+    public List<Response> select(Map<String, Integer> requestedRevisionByLabelId,
+        List<Response> responses, Tracker tracker, Map<String, Integer> defaultRevisionByLabelId) {
       return responses;
     }
   },
   SELECT_BY_LABEL {
     @Override
-    public List<Response> select(Request request, List<Response> responses, Tracker tracker,
-        Map<String, Integer> defaultRevisionByLabelId) {
-      Map<String, Integer> requestedRevisionByLabelId = requestedRevisionMap(request);
+    public List<Response> select(Map<String, Integer> requestedRevisionByLabelId,
+        List<Response> responses, Tracker tracker, Map<String, Integer> defaultRevisionByLabelId) {
 
       List<Response> selected = new ArrayList<Response>();
       for (Response current : responses) {
         select(current, requestedRevisionByLabelId, defaultRevisionByLabelId, selected, tracker);
       }
       return selected;
-    }
-
-    private Map<String, Integer> requestedRevisionMap(Request request) {
-      Map<String, Integer> revisionByLabelName = new HashMap<String, Integer>();
-      for (int i = 0; i < request.numLabels(); ++i)
-        revisionByLabelName.put(labelId(request.label(i)),  request.label(i).revision);
-      return revisionByLabelName;
     }
 
     private void select(Response response, Map<String, Integer> revisionByLabelId,
@@ -55,10 +46,6 @@ public enum SelectionPolicy {
 
       tracker.discardedResponse(response, "Label [" + labelId(response.label())
           + "] was not requested and is not the default");
-    }
-
-    private String labelId(Label label) {
-      return label.generatorId + "/" + label.name;
     }
 
     private boolean addOrDiscard(Response response, Map<String, Integer> revisionByLabelId,
@@ -86,10 +73,14 @@ public enum SelectionPolicy {
   }
   ;
 
-  public abstract List<Response> select(Request request, List<Response> responses, Tracker tracker,
-      Map<String, Integer> defaultRevisionByLabelId);
+  public abstract List<Response> select(Map<String, Integer> requestedRevisionByLabelId,
+      List<Response> responses, Tracker tracker, Map<String, Integer> defaultRevisionByLabelId);
 
   public static SelectionPolicy lookup(String policyName) {
     return policyName == null ? SELECT_BY_LABEL : valueOf(policyName);
+  }
+
+  public static String labelId(Label label) {
+    return label.generatorId + "/" + label.name;
   }
 }

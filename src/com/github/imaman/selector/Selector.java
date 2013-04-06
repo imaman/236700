@@ -1,7 +1,9 @@
 package com.github.imaman.selector;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.github.imaman.selector.external.Response;
 import com.github.imaman.selector.external.Tracker;
@@ -31,7 +33,7 @@ public class Selector {
     }
 
     SelectionPolicy policy = SelectionPolicy.lookup(request.valueOf(SELECTION_POLICY_KEY));
-    return policy.select(request, selected, tracker,
+    return policy.select(requestedRevisionMap(request), selected, tracker,
         config == null ? null : config.defaultRevisionByLabel());
   }
 
@@ -40,5 +42,12 @@ public class Selector {
    */
   public void setMaxAllowedAge(int ageInMilliseconds) {
     this.maxAllowedAge = ageInMilliseconds;
+  }
+
+  private Map<String, Integer> requestedRevisionMap(Request request) {
+    Map<String, Integer> revisionByLabelName = new HashMap<String, Integer>();
+    for (int i = 0; i < request.numLabels(); ++i)
+      revisionByLabelName.put(SelectionPolicy.labelId(request.label(i)),  request.label(i).revision);
+    return revisionByLabelName;
   }
 }
