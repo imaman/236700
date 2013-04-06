@@ -179,7 +179,6 @@ public class Selector_Test {
   }
 
   @Test
-  @Ignore
   public void temporaryTestJutsToMakeSureWeDoNotForgetTheFakeImpl() {
     Response b2 = newResponse("a1", 0, new Label("G_G", "B", 2));
     Request request = new Request(0L,  "");
