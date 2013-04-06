@@ -28,12 +28,22 @@ public enum SelectionPolicy {
 
       List<Response> selected = new ArrayList<Response>();
       for (Response current : responses) {
-        String reason = findReasonToDiscard(current, revisionByLabelName, config);
-        if (reason == null ||
-            config != null && config.map().get(labelId(current.label())) == current.label().revision) // <- FAKE IT
+        String reason = findReasonToDiscard(current, revisionByLabelName, "Requested");
+        if (reason == null)
           selected.add(current);
-        else
+        else if (!reason.isEmpty())
           tracker.discardedResponse(current, reason);
+        else if (config != null) {
+          reason = findReasonToDiscard(current, config.map(), "Default");
+          if (reason == null)
+            selected.add(current);
+          else if (!reason.isEmpty())
+            tracker.discardedResponse(current, reason);
+          else
+            tracker.discardedResponse(current, "Label [" + labelId(current.label()) + "] was not requested and is not the default version");
+        } else
+          tracker.discardedResponse(current, "Label [" + labelId(current.label()) + "] was not requested");
+
       }
 
       return selected;
@@ -44,7 +54,7 @@ public enum SelectionPolicy {
     }
 
     private String findReasonToDiscard(Response current, Map<String, Integer> revisionByLabelName,
-        SelectorConfig config) {
+        String prefix) {
       Label label = current.label();
       if (label == null)
         return null;
@@ -53,11 +63,11 @@ public enum SelectionPolicy {
       if (requestedRevision != null) {
         if (Objects.equals(requestedRevision, label.revision))
           return null;
-        return String.format("Requested revision [%s] does not match the response's revision [%d]",
-            requestedRevision, label.revision);
+        return String.format("%s revision [%s] does not match the response's revision [%d]",
+            prefix, requestedRevision, label.revision);
       }
 
-      return "Label [" + labelId(label) + "] was not requested";
+      return "";
     }
   }
   ;
