@@ -12,13 +12,19 @@ import com.google.gson.JsonParser;
 public class SelectorConfig extends Config {
 
   private JsonObject data;
+  private Map<String, Integer> defaultRevisionByLabel;
 
   public void LoadFromString(String json) {
     JsonParser jp = new JsonParser();
     this.data = (JsonObject) jp.parse(json);
+    this.defaultRevisionByLabel = computeDefaultRevisionMap();
   }
 
   public Map<String, Integer> defaultRevisionByLabel() {
+    return defaultRevisionByLabel;
+  }
+
+  private Map<String, Integer> computeDefaultRevisionMap() {
     Map<String, Integer> result = new HashMap<>();
     JsonArray array = data.getAsJsonArray("generators");
     for (JsonElement current : array) {
