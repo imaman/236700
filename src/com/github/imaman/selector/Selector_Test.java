@@ -161,24 +161,6 @@ public class Selector_Test {
 
   @Test
   public void discardsResponseIfNoRequestedLabelIsSpecifiedAndDefaultLabelDoesNotMatch() {
-    Response a1 = newResponse("a1", 0, new Label("G_G", "A", 1));
-    Request request = new Request(0L,  "");
-
-    SelectorConfig config = new SelectorConfig();
-    config.LoadFromString("{" +
-        "generators: [" +
-        "  { name: 'G_G', default_labels: [['A', 2]] }]}");
-
-    Selector selector = new Selector(config);
-    List<Response> selected = selector.select(request, asList(a1), tracker);
-
-    assertEquals(0, selected.size());
-    verify(tracker).discardedResponse(a1,
-        "Default revision [2] does not match the response's revision [1]");
-  }
-
-  @Test
-  public void temporaryTestJutsToMakeSureWeDoNotForgetTheFakeImpl() {
     Response b2 = newResponse("a1", 0, new Label("G_G", "B", 2));
     Request request = new Request(0L,  "");
 
