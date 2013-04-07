@@ -30,14 +30,18 @@ public enum SelectionPolicy {
       return selected;
     }
 
-    private void select(Response response, Map<String, Integer> revisionByLabelId,
-        SelectorConfig config, List<Response> selected, Tracker tracker) {
+    private void select(Response response, final Map<String, Integer> revisionByLabelId,
+        final SelectorConfig config, List<Response> selected, Tracker tracker) {
       if (response.label() == null) {
         selected.add(response);
         return;
       }
 
-      if (addOrDiscard(response, revisionByLabelId, "Requested", selected, tracker))
+      if (addOrDiscard(response, new IntegerByLabel() {        
+        @Override public Integer get(Label label) {
+          return revisionByLabelId.get(label.id());
+        }
+      }, "Requested", selected, tracker))
         return;
 
       if (config == null) {
@@ -46,28 +50,21 @@ public enum SelectionPolicy {
         return;
       }
 
-      if (addOrDiscard(response, config, "Default", selected, tracker))
+      if (addOrDiscard(response, new IntegerByLabel() {
+        @Override public Integer get(Label label) {
+          return config.defaultRevisionOf(label);
+        }
+      }, "Default", selected, tracker))
         return;
 
       tracker.discardedResponse(response, "Label [" + response.label().id()
           + "] was not requested and is not the default");
     }
 
-    private boolean addOrDiscard(Response response, Map<String, Integer> revisionByLabelId,
+    private boolean addOrDiscard(Response response, IntegerByLabel revisionByLabel,
         String prefix, List<Response> selected, Tracker tracker) {
       for (Label label : labelsToCheck(response)) {
-        Integer requestedRevision = revisionByLabelId.get(label.id());
-        if (check(prefix, label, response, requestedRevision, selected, tracker))
-          return true;
-      }
-
-      return false;
-    }
-
-    private boolean addOrDiscard(Response response, SelectorConfig config,
-        String prefix, List<Response> selected, Tracker tracker) {
-      for (Label label : labelsToCheck(response)) {
-        Integer requestedRevision = config.defaultRevisionOf(label);
+        Integer requestedRevision = revisionByLabel.get(label);
         if (check(prefix, label, response, requestedRevision, selected, tracker))
           return true;
       }
@@ -98,6 +95,10 @@ public enum SelectionPolicy {
     }
   }
   ;
+
+  private interface IntegerByLabel {
+    public Integer get(Label label);
+  }
 
   public abstract List<Response> select(Map<String, Integer> requestedRevisionByLabelId,
       List<Response> responses, Tracker tracker, SelectorConfig config);
