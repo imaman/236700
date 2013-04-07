@@ -13,7 +13,7 @@ public class SelectorConfig_Test {
         "generators: [" +
         "  { name: 'G_G', default_labels: [['A', 100]] }]}");
 
-    assertEquals(100, config.defaultRevisionByLabel().get("G_G/A").intValue());
+    assertEquals(100, config.defaultRevisionOf("G_G/A").intValue());
   }
 
   @Test
@@ -23,8 +23,8 @@ public class SelectorConfig_Test {
         "generators: [" +
         "  { name: 'G_G', default_labels: [['A', 100], ['B', 200]] }]}");
 
-    assertEquals(100, config.defaultRevisionByLabel().get("G_G/A").intValue());
-    assertEquals(200, config.defaultRevisionByLabel().get("G_G/B").intValue());
+    assertEquals(100, config.defaultRevisionOf("G_G/A").intValue());
+    assertEquals(200, config.defaultRevisionOf("G_G/B").intValue());
   }
 
   @Test
@@ -36,7 +36,7 @@ public class SelectorConfig_Test {
         "  { name: 'Second', default_labels: [['L2', 502]] }" +
         "]}");
 
-    assertEquals(501, config.defaultRevisionByLabel().get("First/L1").intValue());
-    assertEquals(502, config.defaultRevisionByLabel().get("Second/L2").intValue());
+    assertEquals(501, config.defaultRevisionOf("First/L1").intValue());
+    assertEquals(502, config.defaultRevisionOf("Second/L2").intValue());
   }
 }

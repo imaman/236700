@@ -33,8 +33,7 @@ public class Selector {
     }
 
     SelectionPolicy policy = SelectionPolicy.lookup(request.valueOf(SELECTION_POLICY_KEY));
-    return policy.select(requestedRevisionMap(request), selected, tracker,
-        config == null ? null : config.defaultRevisionByLabel());
+    return policy.select(requestedRevisionMap(request), selected, tracker, config);
   }
 
   /**

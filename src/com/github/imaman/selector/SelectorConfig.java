@@ -20,8 +20,12 @@ public class SelectorConfig extends Config {
     this.defaultRevisionByLabel = computeDefaultRevisionMap();
   }
 
-  public Map<String, Integer> defaultRevisionByLabel() {
-    return defaultRevisionByLabel;
+  public Integer defaultRevisionOf(Label label) {
+    return defaultRevisionOf(label.id());
+  }
+
+  public Integer defaultRevisionOf(String labelId) {
+    return defaultRevisionByLabel.get(labelId);
   }
 
   private Map<String, Integer> computeDefaultRevisionMap() {
