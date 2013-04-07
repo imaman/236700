@@ -32,6 +32,11 @@ public enum SelectionPolicy {
 
     private void select(Response response, Map<String, Integer> revisionByLabelId,
         SelectorConfig config, List<Response> selected, Tracker tracker) {
+      if (response.label() == null) {
+        selected.add(response);
+        return;
+      }
+
       if (addOrDiscard(response, revisionByLabelId, "Requested", selected, tracker))
         return;
 
@@ -50,25 +55,10 @@ public enum SelectionPolicy {
 
     private boolean addOrDiscard(Response response, Map<String, Integer> revisionByLabelId,
         String prefix, List<Response> selected, Tracker tracker) {
-      Label originalLabel = response.label();
-      if (originalLabel == null) {
-        selected.add(response);
-        return true;
-      }
-      Label wildcardLabel = new Label(originalLabel.generatorId, "*", originalLabel.revision);
-      
-      for (Label label : Arrays.asList(originalLabel, wildcardLabel)) {
+      for (Label label : labelsToCheck(response)) {
         Integer requestedRevision = revisionByLabelId.get(label.id());
-        if (requestedRevision != null) {
-          if (Objects.equals(requestedRevision, label.revision)) {
-            selected.add(response);
-            return true;
-          }
-          String reason = String.format("%s revision [%s] does not match the response's revision [%d]",
-              prefix, requestedRevision, label.revision);
-          tracker.discardedResponse(response, reason);
+        if (check(prefix, label, response, requestedRevision, selected, tracker))
           return true;
-        }
       }
 
       return false;
@@ -76,27 +66,34 @@ public enum SelectionPolicy {
 
     private boolean addOrDiscard(Response response, SelectorConfig config,
         String prefix, List<Response> selected, Tracker tracker) {
-      Label originalLabel = response.label();
-      if (originalLabel == null) {
-        selected.add(response);
-        return true;
-      }
-      Label wildcardLabel = new Label(originalLabel.generatorId, "*", originalLabel.revision);
-      
-      for (Label label : Arrays.asList(originalLabel, wildcardLabel)) {
-        Integer requestedRevision = config.defaultVersionOf(label);
-        if (requestedRevision != null) {
-          if (Objects.equals(requestedRevision, label.revision)) {
-            selected.add(response);
-            return true;
-          }
-          String reason = String.format("%s revision [%s] does not match the response's revision [%d]",
-              prefix, requestedRevision, label.revision);
-          tracker.discardedResponse(response, reason);
+      for (Label label : labelsToCheck(response)) {
+        Integer requestedRevision = config.defaultRevisionOf(label);
+        if (check(prefix, label, response, requestedRevision, selected, tracker))
           return true;
-        }
       }
 
+      return false;
+    }
+
+    private List<Label> labelsToCheck(Response response) {
+      Label originalLabel = response.label();
+      Label wildcardLabel = new Label(originalLabel.generatorId, "*", originalLabel.revision);      
+      return Arrays.asList(originalLabel, wildcardLabel);
+    }
+    
+    private boolean check(String prefix, Label label, Response response, 
+        Integer requestedRevision, List<Response> selected, Tracker tracker) {
+      if (requestedRevision != null) {
+        if (Objects.equals(requestedRevision, label.revision)) {
+          selected.add(response);
+          return true;
+        }
+        String reason = String.format("%s revision [%s] does not match the response's revision [%d]",
+            prefix, requestedRevision, label.revision);
+        tracker.discardedResponse(response, reason);
+        return true;
+      }   
+      
       return false;
     }
   }
