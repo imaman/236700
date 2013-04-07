@@ -1,6 +1,7 @@
 package com.github.imaman.selector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -50,23 +51,27 @@ public enum SelectionPolicy {
 
     private boolean addOrDiscard(Response response, Map<String, Integer> revisionByLabelId,
         String prefix, List<Response> selected, Tracker tracker) {
-      Label label = response.label();
-      if (label == null) {
+      Label originalLabel = response.label();
+      if (originalLabel == null) {
         selected.add(response);
         return true;
       }
-
-      Integer requestedRevision = revisionByLabelId.get(label.id());
-      if (requestedRevision != null) {
-        if (Objects.equals(requestedRevision, label.revision)) {
-          selected.add(response);
+      Label wildcardLabel = new Label(originalLabel.generatorId, "*", originalLabel.revision);
+      
+      for (Label label : Arrays.asList(originalLabel, wildcardLabel)) {
+        Integer requestedRevision = revisionByLabelId.get(label.id());
+        if (requestedRevision != null) {
+          if (Objects.equals(requestedRevision, label.revision)) {
+            selected.add(response);
+            return true;
+          }
+          String reason = String.format("%s revision [%s] does not match the response's revision [%d]",
+              prefix, requestedRevision, label.revision);
+          tracker.discardedResponse(response, reason);
           return true;
         }
-        String reason = String.format("%s revision [%s] does not match the response's revision [%d]",
-            prefix, requestedRevision, label.revision);
-        tracker.discardedResponse(response, reason);
-        return true;
       }
+      
 
       return false;
     }

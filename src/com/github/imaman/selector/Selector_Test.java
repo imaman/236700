@@ -174,4 +174,15 @@ public class Selector_Test {
 
     assertEquals(asList(b2), selected);
   }
+
+  @Test
+  public void whenLabelNameIsStarMatchesAllResponsesFromThatPlugin() {
+    Response b2 = newResponse("a1", 0, new Label("G_G", "B", 2));
+    Request request = new Request(0L,  "", new Label("G_G", "*", 2));
+
+    Selector selector = new Selector(null);
+    List<Response> selected = selector.select(request, asList(b2), tracker);
+
+    assertEquals(asList(b2), selected);
+  }
 }
