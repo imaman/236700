@@ -6,7 +6,9 @@ public class MountainBike extends Bicycle {
   private String rearShock;
 
   public MountainBike(Record record) {
-    super(record);
+    super(record, new TireSize() {
+      @Override public String calculate() { return "2.1"; } 
+    });
     this.frontShock = record.get("front_shock");
     this.rearShock = record.get("rear_shock");
   }
@@ -20,11 +22,6 @@ public class MountainBike extends Bicycle {
     return "rear_shock: '" + rearShock + "'";      
   }
   
-  @Override
-  protected String tireSize() {
-    return "2.1";
-  }
-
   public String getFrontShock() { 
     return frontShock;
   }

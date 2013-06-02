@@ -5,7 +5,9 @@ public class RoadBike extends Bicycle {
   private String tapeColor;
 
   public RoadBike(Record record) {
-    super(record);
+    super(record, new TireSize() {
+      @Override public String calculate() { return "23"; }
+    });
     this.tapeColor = record.get("tape_color");
   }
   
@@ -18,11 +20,6 @@ public class RoadBike extends Bicycle {
     return "tape_color: '" + tapeColor + "'";
   }
   
-  @Override
-  protected String tireSize() {
-    return "23";
-  }
-
   public String getTapeColor() {
     return tapeColor;
   }

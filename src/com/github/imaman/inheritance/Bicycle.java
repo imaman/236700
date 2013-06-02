@@ -1,26 +1,33 @@
 package com.github.imaman.inheritance;
 
 
+
 public abstract class Bicycle {
 
   private String size;
+  private TireSize tireSize;
   
-  public Bicycle(String json) {
-    this(new Record(json));
+  public interface TireSize {
+    public String calculate();
+  }
+  
+  public Bicycle(String json, TireSize tireSize) {
+    this(new Record(json), tireSize);
   }
 
-  public Bicycle(Record record) {
+  public Bicycle(Record record, TireSize tireSize) {
     this.size = record.get("size");
+    this.tireSize = tireSize;
   }
   
   public Record spares() {
-    // Let's make it a template method! x2
-    return new Record("chain: '10-speed', tire_size: '" + tireSize() + "', " + customSpares());      
+    // Delegate tire-size-calculation to another object.
+    return new Record("chain: '10-speed', tire_size: '" + tireSize.calculate() + "', " 
+        + customSpares());      
   }
 
   protected abstract String customSpares();
-  protected abstract String tireSize();
-
+  
   public String getSize() {
     return size;
   }
