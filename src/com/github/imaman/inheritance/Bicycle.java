@@ -8,11 +8,6 @@ import java.util.Map.Entry;
 
 public abstract class Bicycle {
 
-  private String size;
-  private TireSize tireSize;
-  private CustomSpares customSpares;
-  private Record record;
-  
   public interface TireSize {
     public String calculate();
   }
@@ -20,6 +15,31 @@ public abstract class Bicycle {
   public interface CustomSpares {
     public void populate(Record record, Map<String, String> map);
   }
+
+  protected static final CustomSpares REAR_SHOCK_SPARES = new CustomSpares() {      
+    @Override public void populate(Record record, Map<String, String> output) {
+      output.put("rear_shock",  record.get("rear_shock"));
+    }
+  };
+  
+  protected static final TireSize MOUNTAIN_BIKE_TIRE_SIZE = new TireSize() {
+    @Override public String calculate() { return "2.1"; } 
+  };
+  
+  protected static CustomSpares TAPE_COLOR_SPARES = new CustomSpares() {      
+    @Override public void populate(Record record, Map<String, String> output) {
+      output.put("tape_color", record.get("tape_color"));
+    }
+  };
+  
+  protected static TireSize ROAD_BIKE_TIRE_SIZE = new TireSize() {
+    @Override public String calculate() { return "23"; }
+  };
+    
+  private String size;
+  private TireSize tireSize;
+  private CustomSpares customSpares;
+  private Record record;
   
   public Bicycle(String json, TireSize tireSize, CustomSpares customSpares) {
     this(new Record(json), tireSize, customSpares);
