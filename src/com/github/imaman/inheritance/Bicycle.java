@@ -14,10 +14,11 @@ public abstract class Bicycle {
   }
   
   public Record spares() {
-    // Let's make it a template method!
-    return new Record("chain: '10-speed', tire_size: '" + tireSize() + "'");      
+    // Let's make it a template method! x2
+    return new Record("chain: '10-speed', tire_size: '" + tireSize() + "', " + customSpares());      
   }
 
+  protected abstract String customSpares();
   protected abstract String tireSize();
 
   public String getSize() {

@@ -14,8 +14,8 @@ public class RoadBike extends Bicycle {
   }
   
   @Override
-  public Record spares() {
-    return super.spares().merge("tape_color: '" + tapeColor + "'");
+  public String customSpares() {
+    return "tape_color: '" + tapeColor + "'";
   }
   
   @Override
