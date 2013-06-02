@@ -1,27 +1,26 @@
 package com.github.imaman.inheritance;
 
+import java.util.Map;
+
 public class MountainBike extends Bicycle {
 
   private String frontShock;
-  private String rearShock;
 
-  public MountainBike(Record record) {
+  public MountainBike(final Record record) {
     super(record, new TireSize() {
       @Override public String calculate() { return "2.1"; } 
+    }, new CustomSpares() {      
+      @Override public void populate(Map<String, String> output) {
+        output.put("rear_shock",  record.get("rear_shock"));
+      }
     });
     this.frontShock = record.get("front_shock");
-    this.rearShock = record.get("rear_shock");
   }
 
   public MountainBike(String json) {
     this(new Record(json));
   }
 
-  @Override
-  public String customSpares() {
-    return "rear_shock: '" + rearShock + "'";      
-  }
-  
   public String getFrontShock() { 
     return frontShock;
   }
