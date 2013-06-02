@@ -12,11 +12,14 @@ public abstract class Bicycle {
   public Bicycle(Record record) {
     this.size = record.get("size");
   }
-    
-  public Record spares() {
-    return new Record("chain: '10-speed'");      
-  }
   
+  public Record spares() {
+    // Let's make it a template method!
+    return new Record("chain: '10-speed', tire_size: '" + tireSize() + "'");      
+  }
+
+  protected abstract String tireSize();
+
   public String getSize() {
     return size;
   }

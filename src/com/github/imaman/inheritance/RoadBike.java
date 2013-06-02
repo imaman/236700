@@ -15,7 +15,12 @@ public class RoadBike extends Bicycle {
   
   @Override
   public Record spares() {
-    return super.spares().merge("tire_size: '23', tape_color: '" + tapeColor + "'");
+    return super.spares().merge("tape_color: '" + tapeColor + "'");
+  }
+  
+  @Override
+  protected String tireSize() {
+    return "23";
   }
 
   public String getTapeColor() {
