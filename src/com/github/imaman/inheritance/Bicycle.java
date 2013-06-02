@@ -13,7 +13,9 @@ public abstract class Bicycle {
     this.size = record.get("size");
   }
     
-  public abstract Record spares();
+  public Record spares() {
+    return new Record("chain: '10-speed'");      
+  }
   
   public String getSize() {
     return size;

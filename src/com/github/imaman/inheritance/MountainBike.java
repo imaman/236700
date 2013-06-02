@@ -17,7 +17,7 @@ public class MountainBike extends Bicycle {
 
   @Override
   public Record spares() {
-    return new Record("chain: '10-speed', tire_size: '2.1', rear_shock: '" + rearShock + "'");      
+    return super.spares().merge("tire_size: '2.1', rear_shock: '" + rearShock + "'");      
   }
   
   public String getFrontShock() { 
