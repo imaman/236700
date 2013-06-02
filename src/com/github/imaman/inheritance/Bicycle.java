@@ -11,13 +11,14 @@ public abstract class Bicycle {
   private String size;
   private TireSize tireSize;
   private CustomSpares customSpares;
+  private Record record;
   
   public interface TireSize {
     public String calculate();
   }
   
   public interface CustomSpares {
-    public void populate(Map<String, String> output);
+    public void populate(Record record, Map<String, String> map);
   }
   
   public Bicycle(String json, TireSize tireSize, CustomSpares customSpares) {
@@ -27,6 +28,7 @@ public abstract class Bicycle {
     this.size = record.get("size");
     this.tireSize = tireSize;
     this.customSpares = customSpares;
+    this.record = record;
   }
   
   public Record spares() {
@@ -37,7 +39,7 @@ public abstract class Bicycle {
 
   private final String customSpares() {
     Map<String, String> map = new HashMap<>();
-    customSpares.populate(map);
+    customSpares.populate(record, map);
     StringBuilder sb = new StringBuilder();
     for (Entry<String, String> entry : map.entrySet()) {
       sb.append(sb.length() > 0 ? ", " : "");

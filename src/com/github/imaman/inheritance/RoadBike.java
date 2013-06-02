@@ -10,7 +10,7 @@ public class RoadBike extends Bicycle {
     super(record, new TireSize() {
       @Override public String calculate() { return "23"; }
     }, new CustomSpares() {      
-      @Override public void populate(Map<String, String> output) {
+      @Override public void populate(Record record, Map<String, String> output) {
         output.put("tape_color", record.get("tape_color"));
       }
     });

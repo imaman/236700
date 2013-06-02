@@ -10,7 +10,7 @@ public class MountainBike extends Bicycle {
     super(record, new TireSize() {
       @Override public String calculate() { return "2.1"; } 
     }, new CustomSpares() {      
-      @Override public void populate(Map<String, String> output) {
+      @Override public void populate(Record record, Map<String, String> output) {
         output.put("rear_shock",  record.get("rear_shock"));
       }
     });
